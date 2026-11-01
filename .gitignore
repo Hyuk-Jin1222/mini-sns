@@ -1,0 +1,58 @@
+# 의존성
+node_modules/
+jspm_packages/
+
+# 빌드 결과물
+dist/
+build/
+out/
+.next/
+.nuxt/
+.output/
+.svelte-kit/
+.turbo/
+.vercel/
+
+# 캐시
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+.npm/
+
+# 테스트 커버리지
+coverage/
+.nyc_output/
+
+# 로그
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 환경 변수 (비밀값이 들어 있으니 꼭 제외)
+.env
+.env.*
+!.env.example
+
+# Yarn Berry (zero-install을 쓰지 않을 때)
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+# 에디터
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

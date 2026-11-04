@@ -34,3 +34,58 @@ Node.js와 Express로 만든 SNS 서비스입니다.
 - 해시태그로 게시글 검색
 - 다른 사용자 팔로우
 - 프로필 페이지 (팔로잉·팔로워 목록)
+
+## DB 구조
+
+```mermaid
+erDiagram
+    users ||--o{ posts : "작성한다"
+    users ||--o{ Follow : "팔로우한다 (followerId)"
+    users ||--o{ Follow : "팔로우된다 (followingId)"
+    posts ||--o{ PostHashtag : "가진다"
+    hashtags ||--o{ PostHashtag : "붙는다"
+
+    users {
+        int id PK
+        varchar(40) email UK "로컬 로그인용, NULL 가능"
+        varchar(15) nick "닉네임"
+        varchar(100) password "bcrypt 해시"
+        enum provider "local | kakao"
+        varchar(30) snsId "카카오 회원 ID"
+        datetime createdAt
+        datetime updatedAt
+        datetime deletedAt "soft delete (paranoid)"
+    }
+
+    posts {
+        int id PK
+        varchar(140) content "본문"
+        varchar(200) img "이미지 경로"
+        int UserId FK "작성자"
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    hashtags {
+        int id PK
+        varchar(15) title UK "해시태그 이름"
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    PostHashtag {
+        int PostId PK, FK
+        int HashtagId PK, FK
+    }
+
+    Follow {
+        int followerId PK, FK "팔로우하는 사람"
+        int followingId PK, FK "팔로우받는 사람"
+    }
+```
+
+| 관계           | 종류 | 설명                                                          |
+| -------------- | ---- | ------------------------------------------------------------- |
+| User → Post    | 1:N  | 사용자 한 명이 여러 게시글을 작성                             |
+| Post ↔ Hashtag | N:M  | `PostHashtag` 중간 테이블로 연결                              |
+| User ↔ User    | N:M  | `Follow` 중간 테이블로 자기 참조 (`Followers` / `Followings`) |

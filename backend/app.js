@@ -11,6 +11,7 @@ const authRouter = require("./routes/auth");
 const { sequelize } = require("./models");
 
 const app = express();
+
 app.set("port", process.env.PORT || 8001);
 
 sequelize

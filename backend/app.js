@@ -3,14 +3,16 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const dotenv = require("dotenv");
-
+const passport = require("passport");
 dotenv.config();
 const pageRouter = require("./routes/page");
 const authRouter = require("./routes/auth");
+const passportConfig = require("./passport");
 
 const { sequelize } = require("./models");
 
 const app = express();
+passportConfig(); // 패스포트 설정 (serialize/deserialize, local 전략 등록)
 
 app.set("port", process.env.PORT || 8001);
 
@@ -39,6 +41,9 @@ app.use(
     },
   }),
 );
+app.use(passport.initialize());
+// deserializeUser가 실행되기 전에 passport.session()이 실행되어야 함
+app.use(passport.session());
 app.use("/", pageRouter);
 app.use("/auth", authRouter);
 

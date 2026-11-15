@@ -7,6 +7,7 @@ const passport = require("passport");
 dotenv.config();
 const pageRouter = require("./routes/page");
 const authRouter = require("./routes/auth");
+const postRouter = require("./routes/post");
 const passportConfig = require("./passport");
 
 const { sequelize } = require("./models");
@@ -27,6 +28,7 @@ sequelize
 
 app.use(morgan("dev"));
 app.use("/", express.static("public"));
+app.use("/img", express.static("uploads"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -46,6 +48,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use("/", pageRouter);
 app.use("/auth", authRouter);
+app.use("/post", postRouter);
 
 app.use((req, res, next) => {
   res.status(404).send("Not Found");

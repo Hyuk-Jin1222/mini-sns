@@ -12,7 +12,13 @@ module.exports = () => {
   //{ id: 3, connect.sid: ...} -> req.user
   passport.deserializeUser(async (id, done) => {
     try {
-      const user = await User.findOne({ where: { id } });
+      const user = await User.findOne({
+        where: { id },
+        include: [
+          { model: User, attributes: ["id", "nick"], as: "Followings" },
+          { model: User, attributes: ["id", "nick"], as: "Followers" },
+        ],
+      });
       done(null, user); //req.user에 user정보 저장 req.isAuthenticated() === true
     } catch (error) {
       console.error(error);

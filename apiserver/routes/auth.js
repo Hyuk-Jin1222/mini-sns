@@ -1,6 +1,6 @@
 const express = require("express");
 const passport = require("passport");
-const { join, login, logout } = require("../controllers/auth");
+const { join, login, logout, me } = require("../controllers/auth");
 const { isLoggedIn, isNotLoggedIn } = require("../middlewares");
 
 const router = express.Router();
@@ -9,6 +9,8 @@ const router = express.Router();
 router.post("/join", isNotLoggedIn, join);
 // POST /auth/login
 router.post("/login", isNotLoggedIn, login);
+// GET /auth/me
+router.get("/me", isLoggedIn, me);
 // GET /auth/logout
 router.get("/logout", isLoggedIn, logout);
 // GET /auth/kakao

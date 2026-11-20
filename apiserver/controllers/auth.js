@@ -42,6 +42,11 @@ exports.login = (req, res, next) => {
     });
   })(req, res, next);
 };
+// GET /auth/me
+exports.me = (req, res) => {
+  const { id, email, nick } = req.user;
+  res.json({ id, email, nick });
+};
 exports.logout = (req, res) => {
   req.logout((err) => {
     if (err) {

@@ -10,6 +10,33 @@
     <div id="user-box" hidden>
       <p><span id="nick"></span>님 안녕하세요</p>
       <button id="logout" type="button">로그아웃</button>
+
+      <h3>도메인 등록</h3>
+      <form id="domain-form">
+        <div>
+          <input id="type-free" type="radio" name="type" value="free" checked />
+          <label for="type-free">무료</label>
+          <input id="type-premium" type="radio" name="type" value="premium" />
+          <label for="type-premium">프리미엄</label>
+        </div>
+        <div>
+          <label for="host">도메인</label>
+          <input id="host" type="text" name="host" placeholder="예) localhost:4000" required />
+        </div>
+        <button type="submit">저장</button>
+      </form>
+
+      <h3>내 도메인</h3>
+      <table border="1">
+        <thead>
+          <tr>
+            <th>도메인 주소</th>
+            <th>타입</th>
+            <th>클라이언트 비밀키</th>
+          </tr>
+        </thead>
+        <tbody id="domain-list"></tbody>
+      </table>
     </div>
 
     <!-- 로그인 안 한 상태 -->
@@ -39,11 +66,43 @@
           document.getElementById("nick").textContent = user.nick;
           document.getElementById("user-box").hidden = false;
           document.getElementById("login-box").hidden = true;
+          showDomains();
         } else {
           document.getElementById("user-box").hidden = true;
           document.getElementById("login-box").hidden = false;
         }
       }
+
+      // 내 도메인 목록을 불러와 표에 채움
+      async function showDomains() {
+        const res = await fetch("/domain");
+        const domains = await res.json();
+        const tbody = document.getElementById("domain-list");
+        tbody.innerHTML = "";
+        domains.forEach((domain) => {
+          const tr = document.createElement("tr");
+          [domain.host, domain.type, domain.clientSecret].forEach((value) => {
+            const td = document.createElement("td");
+            td.textContent = value;
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+      }
+
+      document.getElementById("domain-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        await fetch("/domain", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            host: e.target.host.value,
+            type: e.target.type.value,
+          }),
+        });
+        e.target.host.value = "";
+        showDomains();
+      });
 
       document.getElementById("login-form").addEventListener("submit", async (e) => {
         e.preventDefault();

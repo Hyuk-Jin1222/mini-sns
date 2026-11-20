@@ -1,11 +1,74 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>API 서버 로그인</title>
   </head>
   <body>
-    메인 페이지
+    <!-- 로그인한 상태 -->
+    <div id="user-box" hidden>
+      <p><span id="nick"></span>님 안녕하세요</p>
+      <button id="logout" type="button">로그아웃</button>
+    </div>
+
+    <!-- 로그인 안 한 상태 -->
+    <div id="login-box" hidden>
+      <h2>mini-sns 계정으로 로그인</h2>
+      <form id="login-form">
+        <div>
+          <label for="email">이메일</label>
+          <input id="email" type="email" name="email" required />
+        </div>
+        <div>
+          <label for="password">비밀번호</label>
+          <input id="password" type="password" name="password" required />
+        </div>
+        <button type="submit">로그인</button>
+      </form>
+      <a href="/auth/kakao"><button type="button">카카오 로그인</button></a>
+      <p id="result"></p>
+    </div>
+
+    <script>
+      // 로그인 상태를 물어보고 알맞은 화면을 보여줌
+      async function showUser() {
+        const res = await fetch("/auth/me");
+        if (res.ok) {
+          const user = await res.json();
+          document.getElementById("nick").textContent = user.nick;
+          document.getElementById("user-box").hidden = false;
+          document.getElementById("login-box").hidden = true;
+        } else {
+          document.getElementById("user-box").hidden = true;
+          document.getElementById("login-box").hidden = false;
+        }
+      }
+
+      document.getElementById("login-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const res = await fetch("/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: e.target.email.value,
+            password: e.target.password.value,
+          }),
+        });
+        if (res.ok) {
+          showUser();
+        } else {
+          const data = await res.json();
+          document.getElementById("result").textContent = data.message;
+        }
+      });
+
+      document.getElementById("logout").addEventListener("click", async () => {
+        await fetch("/auth/logout");
+        showUser();
+      });
+
+      showUser();
+    </script>
   </body>
 </html>

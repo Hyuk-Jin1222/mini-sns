@@ -1,6 +1,15 @@
 const jwt = require("jsonwebtoken");
 const { Domain, User } = require("../models");
 
+// Origin("http://localhost:4000")의 호스트가 등록된 host("localhost:4000")와 같은지
+const isSameHost = (origin, host) => {
+  try {
+    return new URL(origin).host === host;
+  } catch {
+    return false; // "null"처럼 주소가 아닌 Origin은 불일치로 봄
+  }
+};
+
 // POST /token
 exports.createToken = async (req, res, next) => {
   const { clientSecret } = req.body;
@@ -13,6 +22,13 @@ exports.createToken = async (req, res, next) => {
       return res
         .status(401)
         .json({ message: "등록되지 않은 도메인입니다. 먼저 도메인을 등록하세요." });
+    }
+    // 브라우저에서 온 요청이면, 요청한 화면의 출처가 비밀키의 도메인과 같아야 함
+    const origin = req.get("origin");
+    if (origin && !isSameHost(origin, domain.host)) {
+      return res
+        .status(401)
+        .json({ message: "이 도메인에서 발급받은 비밀키가 아닙니다." });
     }
     const token = jwt.sign(
       { id: domain.User.id, nick: domain.User.nick },

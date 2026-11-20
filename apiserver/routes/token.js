@@ -1,8 +1,10 @@
 const express = require("express");
 const { createToken, tokenTest } = require("../controllers/token");
-const { verifyToken } = require("../middlewares");
+const { verifyToken, corsWhenDomainMatches } = require("../middlewares");
 
 const router = express.Router();
+
+router.use(corsWhenDomainMatches);
 
 // POST /token
 router.post("/", createToken);

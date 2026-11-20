@@ -1,0 +1,31 @@
+const passport = require("passport");
+const local = require("./localStrategy");
+const kakao = require("./kakaoStrategy");
+const User = require("../models/user");
+
+module.exports = () => {
+  // req.login() 호출 시 실행
+  passport.serializeUser((user, done) => {
+    done(null, user.id); // 세션에 user.id만 저장
+  });
+
+  //{ id: 3, connect.sid: ...} -> req.user
+  passport.deserializeUser(async (id, done) => {
+    try {
+      const user = await User.findOne({
+        where: { id },
+        include: [
+          { model: User, attributes: ["id", "nick"], as: "Followings" },
+          { model: User, attributes: ["id", "nick"], as: "Followers" },
+        ],
+      });
+      done(null, user); //req.user에 user정보 저장 req.isAuthenticated() === true
+    } catch (error) {
+      console.error(error);
+      done(error);
+    }
+  });
+
+  local();
+  kakao();
+};

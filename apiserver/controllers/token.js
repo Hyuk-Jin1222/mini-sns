@@ -25,3 +25,8 @@ exports.createToken = async (req, res, next) => {
     return next(error);
   }
 };
+
+// GET /token/test  (verifyToken이 먼저 실행되어 res.locals.decoded에 토큰 내용이 들어 있음)
+exports.tokenTest = (req, res) => {
+  res.json(res.locals.decoded);
+};
